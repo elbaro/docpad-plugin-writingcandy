@@ -1,0 +1,34 @@
+{
+    "name": "docpad-plugin-writingcandy",
+    "version": "2.0.0",
+    "description": "DocPad plugin that adds the extra syntax",
+    "homepage": "https://github.com/donggu/docpad-plugin-easymarkup",
+    "keywords": [
+        "docpad",
+        "docpad-plugin",
+        "gollum",
+        "wiki",
+        "markup"
+    ],
+    "author": "Copyright holders name <copyright holder's email> (copyright holder's website url)",
+    "maintainers": [
+        "Your name <your email> (http://github.com/donggu)"
+    ],
+    "contributors": [
+        "Your name <your email> (http://github.com/donggu)"
+    ],
+    "bugs": {
+        "url": "https://github.com/yourgithubusername/docpad-plugin-writingcandy/issues"
+    },
+    "repository" : {
+        "type": "git",
+        "url": "https://github.com/yourgithubusername/docpad-plugin-writingcandy.git"
+    },
+    "engines" : {
+        "node": ">=0.8"
+    },
+    "peerDependencies": {
+        "docpad": "6"
+    },
+    "main": "./src/writingcandy.plugin.coffee"
+}
