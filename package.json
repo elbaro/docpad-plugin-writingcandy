@@ -1,6 +1,6 @@
 {
     "name": "docpad-plugin-writingcandy",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "description": "DocPad plugin that adds the extra syntax",
     "homepage": "https://github.com/donggu/docpad-plugin-writingcandy",
     "keywords": [
@@ -31,6 +31,12 @@
     },
     "peerDependencies": {
         "docpad": "6"
+    },
+    "dependencies": {
+        "jsdom": "0.10.5",
+        "websequencediagrams": "0.0.2",
+        "cheerio":"0.15.0",
+        "coffee-script":"1.7.1"
     },
     "main": "./src/writingcandy.plugin.coffee"
 }

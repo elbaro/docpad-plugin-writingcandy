@@ -20,15 +20,17 @@ module.exports = (BasePlugin) ->
         if tag.match(/^_TOC_$/)
             "[[#{tag}]]"
         else if tag.match(/^_$/)
-            "<div class="clearfloats"></div>"
+            "<div class='clearfloats'></div>"
         else if html = process_include_tag(tag)
             html
         else if html = process_image_tag(tag)
             html
         else if html = process_file_link_tag(tag)
             html
+        else if html = process_page_link_tag(tag)
+            html
         else
-            process_page_link_tag(tag)
+            "[[#{tag}]]"
 
     process_include_tag = (tag) -> null
     process_image_tag = (tag) -> null
@@ -38,30 +40,32 @@ module.exports = (BasePlugin) ->
         tags = tag.split('|')
         if tags.length == 1
             name = tags[0].trim()
-            "<a href="#{name}">#{name}</a>"
+            link = encodeURIComponent(name)
+            "<a href='#{link}'>#{name}</a>"
         else if tags.length == 2
             name = tags[0].trim()
-            page_name = tags[1].trim()
-            link = encodeURIComponent(page_name)
-            "<a class="internal" href="#{link}">#{name}</a>"
+            link = encodeURIComponent(tags[1].trim())
+            "<a class='internal' href='#{link}'>#{name}</a>"
         else
-            tag + " ** cannot understand this - docpad plugin **"
+            null
 
     # Define Plugin
-    class WritingCandyPlugnin extends BasePlugin
+    class WritingCandyPlugin extends BasePlugin
         # Plugin name
         name: 'WritingCandy'
-        renderDocument: (extension, templateData, file, content) ->
+        renderDocument: (opts, next) ->
+            {extension, file, content} = opts
+
             if file.type is 'document' and extension is 'html'
 
                 # 1. Fetch Remote Code
                 # 2. Double-square-brackets
                 # 2-1 Put placeholders
-                content = content.replace(/(.?)\[\[(.+?)\]\]([^\[]?)/m, (match, $1, $2, $3)->
+                map = {}
+                content = content.replace(/(.?)\[\[(.+?)\]\]([^\[]?)/gm, (match, $1, $2, $3)->
                     if $1 == "'" and $3 != "'"
                         "[[#{$2}]]#{$3}"
-                    else if $2.contains('][')
-
+                    else if $2.indexOf('][')>=0
 
                         if $2.slice(0,5)=='file:'
                             pre = $1
@@ -80,16 +84,19 @@ module.exports = (BasePlugin) ->
                         "#{$1}#{id}#{$3}"
                 )
 
+
                 # 2-2 Process tags
                 for id, tag of map
                     if is_preformatted(content,id)
+                        #if opts.document.basename=='test'
                         content = content.replace(id, "[[#{tag}]]")
                     else
+                        #if opts.document.basename=='test'
                         content = content.replace(id, process_tag(tag).replace('%2F','/'))
                         # Twitter @id link
                         # 5. Web-sequence-diagram http://www.websequencediagrams.com/index.php"
                         content = content.replace(
-                            /^\{\{\{\{\{\{ ?(.+?)\r?\n(.+?)\r?\n\}\}\}\}\}\}\r?$/m
+                            /^\{\{\{\{\{\{ ?(.+?)\r?\n(.+?)\r?\n\}\}\}\}\}\}\r?$/gm
                             , (match, style, code) ->
                                 wsd.diagram(code, style, "png", (err, buf, typ) ->
                                     if err
@@ -118,42 +125,7 @@ module.exports = (BasePlugin) ->
                     ...
                 ###
 
-
-
-                # Create DOM from the file content
-                jsdom.env(
-                    html: "<html><body>#{content}</body></html>"
-                    features:
-                        QuerySelector: true
-                    done: (err,window) ->
-                        # Check
-                        return next(err)  if err
-
-                        # Find highlightable elements
-                        elements = window.document.querySelectorAll(
-                            'code pre, pre code, .highlight'
-                        )
-
-                        # Check
-                        if elements.length is 0
-                            return next()
-
-                        # Tasks
-                        tasks = new TaskGroup().setConfig(concurrency:0).once 'complete', (err) ->
-                            return next(err)  if err
-                            # Apply the content
-                            opts.content = window.document.body.innerHTML
-                            # Completed
-                            return next()
-
-                        # Syntax highlight those elements
-                        (key for value,key in elements).forEach (key) -> tasks.addTask (complete) ->
-                            element = elements.item(key)
-                            highlightElement(window, element, complete)
-
-                        # Run
-                        tasks.run()
-                )
-
+                opts.content = content
+                return next()
             else
                 return next()
