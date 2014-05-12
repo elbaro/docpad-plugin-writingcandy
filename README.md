@@ -6,7 +6,9 @@ docpad-plugin-writingcandy
 
 This plugin adds extra syntax to your writing.
 - Gollum-wiki style interlink [[../Like/this]]
-- *NotImplementedYet* Remote code / image
-- *NotImplementedYet* Footnotes as in Multi-markdown
+- Table of contents, parsed from `<h1>..<h6>` tags
+- Auto-link @twitter
+- Remote code / image
+- Footnotes as in Multi-markdown
 
 - .. more on demand
