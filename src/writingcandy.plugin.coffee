@@ -42,6 +42,7 @@ module.exports = (BasePlugin) ->
         else
             null
 
+    normalize = (name) -> name
     parse_image_tag_options = (tag) -> null
     process_file_link_tag = (tag) -> null
     process_page_link_tag = (tag) ->
@@ -51,14 +52,14 @@ module.exports = (BasePlugin) ->
             if link.match(/^https?:\/\//)
                 "<a href='#{link}'>#{link}</a>"
             else
-                "<a class='internal' href='#{encodeURI(link)}'>#{link}</a>"
+                "<a class='internal' href='#{normalize(link)}'>#{link}</a>"
         else if tags.length == 2
             name = tags[0].trim()
             link = tags[1].trim()
             if link.match(/^https?:\/\//)
                 "<a href='#{link}'>#{name}</a>"
             else
-                "<a class='internal' href='#{encodeURI(link)}'>#{name}</a>"
+                "<a class='internal' href='#{normalize(link)}'>#{name}</a>"
         else
             null
 
